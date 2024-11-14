@@ -17,6 +17,7 @@ const getUserByEmail = async (email: string) => {
       appwriteConfig.usersCollectionId,
       [Query.equal("email", [email])],
     );
+    console.log(email)
   
     return result.total > 0 ? result.documents[0] : null;
   };
@@ -31,7 +32,7 @@ const getUserByEmail = async (email: string) => {
   
     try {
       const session = await account.createEmailToken(ID.unique(), email);
-  
+      console.log(session.userId)
       return session.userId;
     } catch (error) {
       handleError(error, "Failed to send email OTP");
@@ -64,6 +65,7 @@ export const createAccount = async({
                 accountId,
               },
             );
+            console.log(fullName, email, accountId)
           }
           return parseStringify({ accountId }) 
 }
@@ -86,7 +88,7 @@ export const verifySecret = async ({
         sameSite: "strict",
         secure: true,
       });
-  
+      console.log('sessionid', session.$id)
       return parseStringify( {sessionId: session.$id});
     } catch (error) {
       handleError(error, "Failed to verify OTP");
@@ -106,7 +108,7 @@ export const verifySecret = async ({
       );
   
       if (user.total <= 0) return null;
-  
+  console.log(user)
       return parseStringify(user.documents[0]);
     } catch (error) {
       console.log(error);
@@ -135,7 +137,7 @@ export const verifySecret = async ({
         await sendEmailOTP({ email });
         return parseStringify({ accountId: existingUser.accountId });
       }
-  
+     console.log(existingUser)
       return parseStringify({ accountId: null, error: "User not found" });
     } catch (error) {
       handleError(error, "Failed to sign in user");
